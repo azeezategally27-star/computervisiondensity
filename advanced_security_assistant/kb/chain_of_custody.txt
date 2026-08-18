@@ -1,0 +1,9 @@
+Chain-of-custody and incident logging
+
+Maintain a clear chain-of-custody for any quarantined item. Logs should capture:
+- Timestamp and location
+- Screening officer and supervisor names or IDs
+- Actions taken (isolation, inspection type, notifying law enforcement)
+- Evidence handling steps and storage location
+
+This helps ensure auditability without compromising safety or privacy.

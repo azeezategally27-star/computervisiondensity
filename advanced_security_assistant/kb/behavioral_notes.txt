@@ -1,0 +1,9 @@
+Behavioral observation notes (for staff training)
+
+This doc provides high-level behavioral patterns that may be useful for staff training. It is not an operational manual or a blueprint for interdiction.
+
+Examples of concerning patterns:
+- Attempts to evade standard passenger processing (splitting luggage between multiple handlers, frequent rerouting).
+- Unaccompanied bags left near public areas for prolonged periods.
+
+Response: observe, notify, and escalate per the local SOPs.

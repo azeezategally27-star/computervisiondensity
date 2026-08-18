@@ -1,0 +1,6 @@
+/* resources.css - light theme for security assistant */
+.window { background: #fbfdff; }
+.header { font-weight: 700; color: #0b3d91; font-size: 18px; }
+.panel { background: #ffffff; border-radius: 8px; padding: 8px; }
+.btn { background: #f0f6ff; color: #0b3d91; border-radius: 6px; }
+.flag { color: #d9534f; font-weight: 700; }

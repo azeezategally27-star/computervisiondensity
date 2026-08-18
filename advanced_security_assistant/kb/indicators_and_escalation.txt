@@ -1,0 +1,14 @@
+Indicators and escalation — screening guidance
+
+This document contains non-actionable, high-level indicators and escalation guidance intended for screening staff and system demonstrations. It is for training and awareness only.
+
+Indicators (non-exhaustive, non-actionable)
+- Unlabeled dense objects in rigid containers that do not match declared contents.
+- Significant mismatch between declared baggage weight and scan-estimated weight.
+- Concealment behavior (e.g., frequent avoidance of screening lines, abnormal patterns at checkpoints).
+
+Escalation & safe handling
+- If screening detects an item of concern: isolate the baggage in a secure area and notify the security supervisor immediately.
+- Do not attempt to open suspicious items with untrained personnel. Use non-destructive inspection first (X-ray review by trained operator).
+- Record incident metadata: entity id, time, location, visual notes, and photos if policy permits.
+- Follow local standard operating procedures and coordinate with law enforcement as required.
