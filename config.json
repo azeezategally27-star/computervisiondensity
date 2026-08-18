@@ -1,0 +1,6 @@
+{
+  "roi": [[100,50],[540,50],[540,300],[100,300]],
+  "roi_threshold": 5,
+  "heatmap_scale": 0.25,
+  "kernel_sigma": 20.0
+}
