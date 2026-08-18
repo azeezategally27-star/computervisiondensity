@@ -1,4 +1,4 @@
-/* resources.css - light theme and animations */
+/* resources.css - light theme and animations (extended) */
 
 .window {
   background: #f7fbff;
@@ -21,3 +21,14 @@
 .dest { color: #2a6f97; }
 .status-on-time { color: #2e8b57; }
 .status-delayed { color: #d46a6a; }
+
+/* Buttons and microinteraction */
+.button-micro {
+  transition: transform 120ms ease;
+}
+.button-micro:active {
+  transform: translateY(2px);
+}
+
+/* Gate map and panels */
+.panel-title { font-weight: 700; color: #0b3d91; }

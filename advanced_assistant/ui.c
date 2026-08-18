@@ -1,7 +1,13 @@
-// ui.c - builds GTK UI and updates UI on data changes
+// ui.c - builds GTK UI and updates UI on data changes (extended with panel buttons)
 #include <gtk/gtk.h>
 #include <string.h>
 #include "data.h"
+
+// declarations for new panels
+void assistant_open_window(GtkWidget *parent);
+void gate_map_open_window(GtkWidget *parent);
+void baggage_open_window(GtkWidget *parent);
+void scheduler_open_window(GtkWidget *parent);
 
 typedef struct AppWidgets {
     GtkWidget *window;
@@ -47,15 +53,21 @@ AppWidgets* ui_build(){
 
     GtkWidget *chat_label = gtk_label_new("Assistant"); gtk_box_pack_start(GTK_BOX(right), chat_label, FALSE, FALSE, 2);
     app->chat_view = gtk_text_view_new(); gtk_text_view_set_editable(GTK_TEXT_VIEW(app->chat_view), FALSE);
-    gtk_widget_set_size_request(app->chat_view, 420, 300);
+    gtk_widget_set_size_request(app->chat_view, 420, 220);
     gtk_box_pack_start(GTK_BOX(right), app->chat_view, FALSE, FALSE, 2);
 
     // controls
     GtkWidget *btn_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     GtkWidget *btn_res = gtk_button_new_with_label("Reschedule...");
     GtkWidget *btn_export = gtk_button_new_with_label("Export CSV");
+    GtkWidget *btn_gate = gtk_button_new_with_label("Gate Map");
+    GtkWidget *btn_baggage = gtk_button_new_with_label("Baggage Panel");
+    GtkWidget *btn_scheduler = gtk_button_new_with_label("Scheduler");
     gtk_container_add(GTK_CONTAINER(btn_box), btn_res);
     gtk_container_add(GTK_CONTAINER(btn_box), btn_export);
+    gtk_container_add(GTK_CONTAINER(btn_box), btn_gate);
+    gtk_container_add(GTK_CONTAINER(btn_box), btn_baggage);
+    gtk_container_add(GTK_CONTAINER(btn_box), btn_scheduler);
     gtk_box_pack_end(GTK_BOX(right), btn_box, FALSE, FALSE, 4);
 
     g_signal_connect(app->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -80,6 +92,13 @@ AppWidgets* ui_build(){
 
     g_signal_connect(app->listbox, "row-activated", G_CALLBACK(on_row_activated), app);
 
+    // button handlers open new windows
+    g_signal_connect(btn_gate, "clicked", G_CALLBACK((GCallback)gate_map_open_window), app->window);
+    g_signal_connect(btn_baggage, "clicked", G_CALLBACK((GCallback)baggage_open_window), app->window);
+    g_signal_connect(btn_scheduler, "clicked", G_CALLBACK((GCallback)scheduler_open_window), app->window);
+    g_signal_connect(btn_res, "clicked", G_CALLBACK(on_row_activated), app->listbox);
+    g_signal_connect(btn_export, "clicked", G_CALLBACK(on_row_activated), app->listbox);
+
     gtk_widget_show_all(app->window);
     global_app = app;
     return app;
@@ -100,16 +119,26 @@ static void open_reschedule_dialog(GtkWindow *parent, int flight_id){
         const char *ntime = gtk_entry_get_text(GTK_ENTRY(entry_time));
         const char *ngate = gtk_entry_get_text(GTK_ENTRY(entry_gate));
         data_update_flight(flight_id, ntime, "Rescheduled", ngate);
-        // notify UI by refreshing list
-        // for simplicity, restart app UI refresh
-        // TODO: more granular update animation
+        g_idle_add((GSourceFunc)ui_refresh_list, NULL);
     }
     gtk_widget_destroy(dialog);
 }
 
 static void on_row_activated(GtkListBox *box, GtkListBoxRow *row, gpointer user_data){
-    int id = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(row), "flight_id"));
-    open_reschedule_dialog(GTK_WINDOW(global_app->window), id);
+    // if activated from button, we open reschedule for selected or first item
+    int id = 0;
+    if(GTK_IS_LIST_BOX(row)){
+        // called with listbox as user_data: pick first active
+        GList *children = gtk_container_get_children(GTK_CONTAINER(box));
+        if(children){
+            GtkListBoxRow *r = GTK_LIST_BOX_ROW(children->data);
+            id = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(r), "flight_id"));
+            g_list_free(children);
+        }
+    } else {
+        id = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(row), "flight_id"));
+    }
+    if(id>0) open_reschedule_dialog(GTK_WINDOW(global_app->window), id);
 }
 
 // basic UI refresh helper (called by simulator via idle)
@@ -136,4 +165,3 @@ void ui_refresh_list(){
     free(fl->items); free(fl);
     gtk_widget_show_all(global_app->window);
 }
-

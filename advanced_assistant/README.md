@@ -1,5 +1,25 @@
-# Advanced Flight Assistant Panel (Prototype)
+# Advanced Flight Assistant Panel — Extended Features
 
-This directory contains a prototype of a native C application (GTK3) called "Flight Assistant Panel" — an advanced, animated flight operations assistant designed for an airport operations center (prototype built for Mauritius airport demo). It is intended as a high-fidelity prototype with many advanced features implemented or stubbed for demonstration. The app is native (not a website) and can run on Linux desktops. It also exposes a local HTTP control API for integration.
+This extension adds multiple simulated, highly‑animated operational panels to the Flight Assistant prototype. All features are local and simulated — no external API keys or services required. The goal is to present a visually-rich, smooth UI demonstrating the requested advanced features for evaluation.
 
-Note: This is a prototype demo. It simulates live updates with a built-in simulator, and provides hooks to connect real feeds (RTSP, airline APIs) and AI backends.
+What was added
+---------------
+- Gate Map: animated gate map with taxiing aircraft icons (simulated).
+- Baggage Panel: conveyor visualization with animated baggage items and status per flight.
+- Assistant: local rule-based AI assistant with "typing" animation and action suggestions.
+- Scheduler: animated Gantt-like resource scheduler visualization.
+- UI Buttons to open each panel and connect to simulator data.
+
+All windows are native GTK3/C and run locally. The simulator drives animations and state changes.
+
+How to build
+------------
+Dependencies (Ubuntu):
+  sudo apt update
+  sudo apt install -y build-essential pkg-config libgtk-3-dev libsqlite3-dev
+
+Build and run inside advanced_assistant/:
+  make
+  ./flight_assistant
+
+No API keys required — everything is simulated and self-contained.
