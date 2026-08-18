@@ -3,3 +3,4 @@
 .window { background: #f3f7fb; }
 .button { background: #ffffff; border-radius: 6px; padding: 6px; }
 .header { font-weight: bold; color: #0b3d91; font-size: 16px; }
+.control-label { color: #0b3d91; font-weight: 600; }
