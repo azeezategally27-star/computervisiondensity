@@ -1,0 +1,15 @@
+# Simulated GPS trace: lat lon timestamp_offset_seconds
+# This is a small loop across the airport area for demo. Coordinates are near MRU (Mauritius).
+-20.4298 57.6830 0
+-20.4299 57.6831 1
+-20.4300 57.6832 2
+-20.4301 57.6833 3
+-20.4302 57.6834 4
+-20.4303 57.6835 5
+-20.4304 57.6836 6
+-20.4303 57.6835 7
+-20.4302 57.6834 8
+-20.4301 57.6833 9
+-20.4300 57.6832 10
+-20.4299 57.6831 11
+-20.4298 57.6830 12
