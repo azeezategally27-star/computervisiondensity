@@ -1,0 +1,5 @@
+# Synthetic scenario: simple placeholder — real scenarios should list items inside bags and positions.
+# Format (informal): each line is a bag id and comma-separated item tokens
+bag1: firearm, liquid, phone
+bag2: clothes, shoes, battery
+bag3: knife, book
