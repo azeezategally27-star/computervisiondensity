@@ -1,0 +1,23 @@
+/* resources.css - light theme and animations */
+
+.window {
+  background: #f7fbff;
+}
+.row-normal {
+  background: #ffffff;
+  transition: background 300ms ease-in-out;
+}
+.row-updated {
+  background: #e8f7e8;
+}
+.row-alert {
+  background: #ffecec;
+}
+.header-label {
+  font-weight: 700;
+  color: #0b3d91;
+}
+.flight-no { font-weight: 700; color: #0b3d91; }
+.dest { color: #2a6f97; }
+.status-on-time { color: #2e8b57; }
+.status-delayed { color: #d46a6a; }
