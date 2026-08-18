@@ -1,0 +1,5 @@
+Baggage Handling — Quick Guide
+
+- Prioritize early loading for long-haul flights. Monitor conveyor throughput and reassign staff when queues exceed 30 bags per hour.
+- If a baggage cart breakdown occurs, route luggage to a secondary conveyor and notify the baggage control team.
+- Lost luggage protocol: tag and log the item, notify the passenger via the help desk, and start trace within 60 minutes.

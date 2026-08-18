@@ -1,0 +1,6 @@
+Mauritius Airport Operations — Overview
+
+Sir Seewoosagur Ramgoolam International Airport (MRU) operations consider local weather patterns (trade winds), runway occupancy patterns, and typical international hub connections. Key points:
+- Peak arrivals: mornings 06:00-09:00 and evenings 17:00-20:00.
+- Gate reassignment should avoid mixing widebody and narrowbody during peak to reduce tow conflicts.
+- Ground transport (buses) must be scheduled when remote stands are used.

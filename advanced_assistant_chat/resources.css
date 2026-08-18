@@ -1,0 +1,7 @@
+/* resources.css - light theme for assistant chat */
+.window { background: #f6f9fc; }
+.chat-window { background: #ffffff; border-radius: 8px; padding: 12px; }
+.user-bubble { background: #0b74de; color: white; padding: 8px; border-radius: 10px; }
+.bot-bubble { background: #eef7ff; color: #0b3d91; padding: 8px; border-radius: 10px; }
+.header { font-weight: 700; color: #0b3d91; font-size: 18px; }
+.typing { color: #888; font-style: italic; }

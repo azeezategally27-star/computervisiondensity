@@ -1,0 +1,10 @@
+SOP: Flight Rescheduling
+
+When a flight requires rescheduling due to operational constraints (weather, crew, technical), follow these steps:
+1. Check current gate occupancy and future gate assignments.
+2. Verify crew duty time and availability.
+3. Check passenger connectivity & inform impacted passengers immediately.
+4. Coordinate with ground handling for baggage and catering changes.
+5. Update the operational system (AODB) and log the change with reason.
+
+Example: If delaying MK123 by 45 minutes, reserve ground crew for an extra hour and update inbound baggage operations.
