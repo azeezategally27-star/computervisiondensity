@@ -1,18 +1,13 @@
 CC = gcc
-CFLAGS = -Wall -g `sdl2-config --cflags`
-LDFLAGS = `sdl2-config --libs` -lGL -lm -lpthread
+CFLAGS = -std=c11 -O2 -Wall -Wextra -pthread
+SRCS = src/main.c src/msgbus.c src/agents.c
+OBJS = $(SRCS:.c=.o)
+TARGET = airport_sim
 
-SRC = src/main.c src/renderer.c src/gps.c
-OBJ = $(SRC:.c=.o)
-BIN = bin/airport_metaverse
+all: $(TARGET)
 
-all: $(BIN)
-
-$(BIN): $(OBJ)
-	@mkdir -p bin
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
 
 clean:
-	rm -f $(OBJ) $(BIN)
-
-.PHONY: all clean
+	rm -f $(OBJS) $(TARGET)

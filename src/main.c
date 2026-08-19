@@ -1,68 +1,96 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include <stdbool.h>
-#include <SDL2/SDL.h>
-#include "renderer.h"
-#include "gps.h"
 
-int main(int argc, char **argv){
-    bool use_sim = true;
-    for(int i=1;i<argc;i++){
-        if(strcmp(argv[i],"--gpsd")==0) use_sim = false;
-        if(strcmp(argv[i],"--sim")==0) use_sim = true;
-    }
+#include "msgbus.h"
+#include "agents.h"
 
-    // initialize GPS (simulated by default)
-    gps_state_t gps;
-    gps_init(&gps);
-    if(use_sim){
-        if(!gps_start_simulation(&gps, "assets/sample_gps.txt")){
-            fprintf(stderr, "Failed to start GPS simulation.\n");
-        }
-    } else {
-        fprintf(stderr, "GPSD mode not implemented in this prototype; falling back to simulation.\n");
-        if(!gps_start_simulation(&gps, "assets/sample_gps.txt")){
-            fprintf(stderr, "Failed to start GPS simulation.\n");
-        }
-    }
-
-    // initialize renderer
-    if(!renderer_init()){
-        fprintf(stderr, "Failed to initialize renderer.\n");
+int main(int argc, char **argv) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s data/flights.csv\n", argv[0]);
         return 1;
     }
 
-    // main loop
-    bool running = true;
-    Uint32 last = SDL_GetTicks();
-    while(running){
-        SDL_Event ev;
-        while(SDL_PollEvent(&ev)){
-            if(ev.type == SDL_QUIT) running = false;
-            if(ev.type == SDL_KEYDOWN){
-                if(ev.key.keysym.sym == SDLK_ESCAPE) running = false;
+    const char *csv = argv[1];
+
+    msgbus_init();
+
+    /* Setup gate state (e.g., 6 gates) */
+    gate_state_t *gs = calloc(1, sizeof(gate_state_t));
+    gs->gate_count = 6;
+    gs->gates = calloc(gs->gate_count, sizeof(gate_t));
+    for (int i=0;i<gs->gate_count;i++) {
+        gs->gates[i].gate_id = i;
+        gs->gates[i].occupied = 0;
+        gs->gates[i].flight[0] = '\0';
+    }
+    pthread_mutex_init(&gs->lock, NULL);
+
+    /* Create agents */
+    agent_t *monitor = create_monitor_agent();
+    agent_t *gate = create_gate_agent(gs);
+    agent_t *baggage = create_baggage_agent();
+    agent_t *security = create_security_agent();
+    agent_t *coord = create_coordinator(gs);
+
+    /* Start agents */
+    agent_start(monitor);
+    agent_start(gate);
+    agent_start(baggage);
+    agent_start(security);
+    agent_start(coord);
+
+    /* Read CSV and post EVT_FLIGHT_ARRIVAL events */
+    FILE *f = fopen(csv, "r");
+    if (!f) {
+        perror("open csv");
+        return 1;
+    }
+    char line[256];
+    int sim_time = 0;
+    // events are scheduled by minute offset in CSV (small simulation)
+    while (fgets(line, sizeof(line), f)) {
+        if (line[0] == '#' || strlen(line) < 3) continue;
+        char flight[32], airline[32];
+        int arrival = 0, pax = 0, priority = 0;
+        // CSV: flight_id,airline,arrival_time,min,pax,priority
+        // trust simple CSV
+        sscanf(line, "%31[^,],%31[^,],%d,%d,%d", flight, airline, &arrival, &pax, &priority);
+        // schedule: sleep until arrival (simulated quickly: 1 second per minute)
+        int delay = arrival - sim_time;
+        if (delay > 0) {
+            for (int i=0;i<delay;i++) {
+                sleep(1); // 1 sec == 1 minute in simulation
+                sim_time++;
+                // occasional heartbeat
+                message_t hb = { .type = EVT_NONE };
+                msgbus_broadcast(&hb);
             }
         }
-
-        // read GPS position
-        double lat, lon;
-        gps_get_position(&gps, &lat, &lon);
-
-        // update renderer avatar position
-        renderer_set_avatar_geoposition(lat, lon);
-
-        // draw
-        renderer_frame();
-
-        // cap ~60fps
-        Uint32 now = SDL_GetTicks();
-        Uint32 dt = now - last;
-        if(dt < 16) SDL_Delay(16 - dt);
-        last = SDL_GetTicks();
+        // post arrival event
+        message_t evt = { .type = EVT_FLIGHT_ARRIVAL };
+        snprintf(evt.payload, sizeof(evt.payload), "%s %d %d %d", flight, pax, arrival, priority);
+        strncpy(evt.topic, flight, sizeof(evt.topic)-1);
+        msgbus_send(coord, &evt);
     }
+    fclose(f);
 
-    renderer_shutdown();
-    gps_shutdown(&gps);
+    // let the system process for a while
+    sleep(5);
+
+    // send shutdown broadcast
+    message_t sd = { .type = EVT_SHUTDOWN };
+    msgbus_broadcast(&sd);
+
+    // graceful stop
+    msgbus_shutdown_all();
+
+    // cleanup
+    free(gs->gates);
+    free(gs);
+
+    printf("Simulation finished.\n");
     return 0;
 }
