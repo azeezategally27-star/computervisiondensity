@@ -1,13 +1,15 @@
 CC = gcc
 CFLAGS = -std=c11 -O2 -Wall -Wextra -pthread
-SRCS = src/main.c src/msgbus.c src/agents.c
-OBJS = $(SRCS:.c=.o)
-TARGET = airport_sim
+LDFLAGS = -lncurses
 
-all: $(TARGET)
+# Targets
+all: airport_sim biometric_app
 
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS)
+airport_sim: src/main.c src/msgbus.c src/agents.c
+	$(CC) $(CFLAGS) -o $@ src/main.c src/msgbus.c src/agents.c
+
+biometric_app: src/biometric_app.c src/biometric_agents.c src/msgbus.c
+	$(CC) $(CFLAGS) -o $@ src/biometric_app.c src/biometric_agents.c src/msgbus.c $(LDFLAGS)
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f airport_sim biometric_app

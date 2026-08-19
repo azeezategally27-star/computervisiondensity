@@ -1,38 +1,39 @@
-Airport Multi-Agent Simulator (pure C)
-=====================================
+This repository now contains two C applications:
 
-Overview
---------
-This is a pure-C multi-agent simulation of an airport system:
-- CoordinatorAgent: central decision-making "AI" agent
-- GateAgent: manages gates, assigns flights
-- BaggageAgent: routes baggage autonomously
-- SecurityAgent: scales lanes based on passenger load
-- MonitorAgent: displays system status
+1) airport_sim - the original multi-agent simulator (message-bus based)
+2) biometric_app - an interactive, ncurses-based biometric UI and agent graph
 
 Build
 -----
-Requirements: gcc, pthreads, POSIX environment.
+Requires: gcc, pthreads, ncurses
 
 $ make
 
 Run
 ---
 $ ./airport_sim data/flights.csv
+$ ./biometric_app
 
-The simulator reads flights from the CSV and simulates arrivals, check-ins,
-baggage drop, gate allocation and boarding. Agents communicate via an
-in-memory message bus (pthread-based).
-
-Files
------
-- src/*.c, src/*.h : source
-- data/flights.csv : sample flights
+biometric_app
+-------------
+- Provides a terminal-based visual graph of agents (Coordinator, BiometricAgent,
+  DoorAgent, Monitor).
+- Interactive buttons (keyboard shortcuts) at the bottom:
+  - E : Enroll a passenger biometric (prompts for passenger ID)
+  - V : Verify a passenger (prompts for passenger ID)
+  - L : Clear logs shown in the UI
+  - Q : Quit
 
 Design notes
 ------------
-- Pure C, event-driven, multi-threaded. Agents are threads with message queues.
-- Coordinator uses simple heuristics to assign gates and trigger other agents.
-- Intended as a foundation for adding more sophisticated decision logic,
-  constraint solving, or external model integrations (the architecture supports
-  adding "tools" or plugin modules).
+- Implemented in pure C using pthreads and ncurses for a visual UI (no web).
+- Uses the same msgbus message passing primitives as airport_sim.
+- Biometric agent stores simple templates in memory and responds to enroll/verify.
+- Monitor agent is implemented inside the UI app to collect logs and display them.
+
+Next steps you can request
+-------------------------
+- Persist biometric templates using SQLite
+- Add more detailed agent diagrams or export as ASCII/PNG
+- Add cryptographic signing for templates
+- Integrate simulated camera/fingerprint sensors (feed files)
