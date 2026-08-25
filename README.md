@@ -1,39 +1,44 @@
-This repository now contains two C applications:
+Repository: computervisiondensity
 
-1) airport_sim - the original multi-agent simulator (message-bus based)
-2) biometric_app - an interactive, ncurses-based biometric UI and agent graph
+This repo contains multiple C applications and libraries. Below is a quick classification of existing code (backend vs frontend) and the new backend/frontend components added in this commit.
 
-Build
------
-Requires: gcc, pthreads, ncurses
+Classification (existing files)
+- "Frontend" (user-facing UI / visualization):
+  - src/biometric_app.c         : ncurses-based interactive UI (Enroll/Verify, logs)
+  - src/renderer.c / src/renderer.h : visualization/renderer utilities (graphical rendering of results)
 
-$ make
+- "Backend" (processing, models, services, core logic):
+  - src/detector_onnx.c / src/detector_onnx.h : ONNX-based detector integration (model inference logic)
+  - src/detector_fake.c / src/detector_fake.h : fake detector (test stub)
+  - src/tracker.c / src/tracker.h : tracking logic
+  - src/kde.c / src/kde.h : density estimation routines
+  - src/gps.c / src/gps.h : GPS / coordinate helpers
+  - src/roi.c / src/roi.h : region-of-interest helpers
+  - src/synthetic_generator.c : synthetic data generator
+  - src/msgbus.c / src/msgbus.h : inter-agent message bus (used by agents)
+  - src/agents.c / src/agents.h : agent implementations (Coordinator, GateAgent, etc.)
+  - src/utils.c / src/utils.h : utility helpers
+  - src/main.c : entrypoint for airport_sim (simulator)
 
-Run
----
-$ ./airport_sim data/flights.csv
-$ ./biometric_app
+New components added in this commit
+- Backend service (TCP): src/backend_server.c
+  - Simple TCP server exposing ENROLL and VERIFY commands for biometric templates.
+  - Maintains a thread-safe in-memory template store.
+  - Responds with text messages: ENROLL_OK, ENROLL_EXISTS, VERIFY_OK, VERIFY_FAIL.
 
-biometric_app
--------------
-- Provides a terminal-based visual graph of agents (Coordinator, BiometricAgent,
-  DoorAgent, Monitor).
-- Interactive buttons (keyboard shortcuts) at the bottom:
-  - E : Enroll a passenger biometric (prompts for passenger ID)
-  - V : Verify a passenger (prompts for passenger ID)
-  - L : Clear logs shown in the UI
-  - Q : Quit
+- Frontend client (ncurses): src/frontend_client.c
+  - Connects to backend_server over TCP, provides ncurses UI for Enroll/Verify, shows remote responses in UI logs.
+  - Keyboard shortcuts: E enroll, V verify, L clear logs, Q quit.
 
-Design notes
-------------
-- Implemented in pure C using pthreads and ncurses for a visual UI (no web).
-- Uses the same msgbus message passing primitives as airport_sim.
-- Biometric agent stores simple templates in memory and responds to enroll/verify.
-- Monitor agent is implemented inside the UI app to collect logs and display them.
+How to build
+1. Install dependencies (ncurses):
+   - Debian/Ubuntu: sudo apt-get install build-essential libncurses-dev
+2. Build all targets:
+   - make
+3. Run services:
+   - ./backend_server          # starts TCP backend on port 5555
+   - ./frontend_client        # starts ncurses UI and connects to localhost:5555
 
-Next steps you can request
--------------------------
-- Persist biometric templates using SQLite
-- Add more detailed agent diagrams or export as ASCII/PNG
-- Add cryptographic signing for templates
-- Integrate simulated camera/fingerprint sensors (feed files)
+Notes
+- The backend is intentionally simple and designed as a starting point to integrate with the existing biometric logic in src/biometric_agents.c. You can later replace the backend store with a persistent DB (SQLite) or connect the msgbus to the backend for tighter integration.
+- This commit adds networked backend/frontend for remote operation or for separating UI and processing.
